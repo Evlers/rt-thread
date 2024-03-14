@@ -9,6 +9,7 @@
  * 2021-06-11     iysheng      implement RTC framework V2.0
  * 2021-07-30     Meco Man     move rtc_core.h to rtc.h
  * 2022-04-05     tyx          add timestamp function
+ * 2024-03-14     Evlers       Remove warning
  */
 
 #ifndef __RTC_H__
@@ -71,7 +72,7 @@ rt_err_t set_timestamp(time_t timestamp);
 rt_err_t get_timestamp(time_t *timestamp);
 
 #ifdef RT_USING_SYSTEM_WORKQUEUE
-rt_err_t rt_soft_rtc_sync();
+rt_err_t rt_soft_rtc_sync(void);
 rt_err_t rt_soft_rtc_set_source(const char *name);
 #endif
 

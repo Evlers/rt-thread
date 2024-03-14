@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author        Notes
  * 2022-05-05     linzhenxing     first version
+ * 2024-03-14     Evlers        Remove warning
  */
 #include <rtthread.h>
 #include <dfs_fs.h>
@@ -191,7 +192,7 @@ static int is_gpt_valid(struct rt_mmcsd_card *card, size_t lba, gpt_header **gpt
         return 0;
     }
 
-    if (!(*gpt = alloc_read_gpt_header(card, lba)))
+    if ((*gpt = alloc_read_gpt_header(card, lba)) == RT_NULL)
     {
         return 0;
     }
@@ -255,7 +256,7 @@ static int is_gpt_valid(struct rt_mmcsd_card *card, size_t lba, gpt_header **gpt
         goto fail;
     }
 
-    if (!(*ptes = alloc_read_gpt_entries(card, *gpt)))
+    if ((*ptes = alloc_read_gpt_entries(card, *gpt)) == RT_NULL)
     {
         goto fail;
     }

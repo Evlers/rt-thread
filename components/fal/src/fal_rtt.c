@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2018-06-23     armink       the first version
  * 2019-08-22     MurphyZhao   adapt to none rt-thread case
+ * 2024-03-14     Evlers       Remove warning
  */
 
 #include <fal.h>
@@ -429,7 +430,7 @@ static int char_dev_fopen(struct dfs_file *fd)
     return RT_EOK;
 }
 
-static int char_dev_fread(struct dfs_file *fd, void *buf, size_t count)
+static ssize_t char_dev_fread(struct dfs_file *fd, void *buf, size_t count)
 {
     int ret = 0;
     struct fal_char_device *part = (struct fal_char_device *) fd->vnode->data;
@@ -449,7 +450,7 @@ static int char_dev_fread(struct dfs_file *fd, void *buf, size_t count)
     return ret;
 }
 
-static int char_dev_fwrite(struct dfs_file *fd, const void *buf, size_t count)
+static ssize_t char_dev_fwrite(struct dfs_file *fd, const void *buf, size_t count)
 {
     int ret = 0;
     struct fal_char_device *part = (struct fal_char_device *) fd->vnode->data;

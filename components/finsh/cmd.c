@@ -30,6 +30,7 @@
  *                             Provide protection for the "first layer of objects" when list_*
  * 2020-04-07     chenhui      add clear
  * 2022-07-02     Stanley Lwin add list command
+ * 2024-03-14     Evlers       Remove warning
  */
 
 #include <rthw.h>
@@ -1060,7 +1061,6 @@ int cmd_list(int argc, char **argv)
 #endif /* RT_USING_DFS */
         default:
             goto _usage;
-            break;
         };
 
         return 0;
