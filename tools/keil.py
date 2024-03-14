@@ -31,6 +31,11 @@ from xml.etree.ElementTree import SubElement
 from utils import _make_path_relative
 from utils import xml_indent
 
+if os.getenv('PROJECTS_PATH'):
+    PROJECTS_PATH = os.getenv('PROJECTS_PATH')
+else:
+    PROJECTS_PATH = os.path.normpath(os.getcwd())
+
 fs_encoding = sys.getfilesystemencoding()
 
 def _get_filetype(fn):
@@ -314,11 +319,11 @@ def MDK45Project(tree, target, script):
 
 def MDK4Project(target, script):
 
-    if os.path.isfile('template.uvproj') is False:
+    if os.path.isfile(os.path.join(PROJECTS_PATH, 'template.uvproj')) is False:
         print ('Warning: The template project file [template.uvproj] not found!')
         return
 
-    template_tree = etree.parse('template.uvproj')
+    template_tree = etree.parse(os.path.join(PROJECTS_PATH, 'template.uvproj'))
 
     MDK45Project(template_tree, target, script)
 
@@ -328,17 +333,17 @@ def MDK4Project(target, script):
         os.unlink(project_uvopt)
 
     # copy uvopt file
-    if os.path.exists('template.uvopt'):
+    if os.path.exists(os.path.join(PROJECTS_PATH, 'template.uvopt')):
         import shutil
-        shutil.copy2('template.uvopt', '{}.uvopt'.format(os.path.splitext(target)[0]))
+        shutil.copy2(os.path.join(PROJECTS_PATH, 'template.uvopt'), os.path.join(PROJECTS_PATH, 'project.uvopt'))
 
 def MDK5Project(target, script):
 
-    if os.path.isfile('template.uvprojx') is False:
+    if os.path.isfile(os.path.join(PROJECTS_PATH, 'template.uvprojx')) is False:
         print ('Warning: The template project file [template.uvprojx] not found!')
         return
 
-    template_tree = etree.parse('template.uvprojx')
+    template_tree = etree.parse(os.path.join(PROJECTS_PATH, 'template.uvprojx'))
 
     MDK45Project(template_tree, target, script)
 
@@ -347,9 +352,9 @@ def MDK5Project(target, script):
     if os.path.isfile(project_uvopt):
         os.unlink(project_uvopt)
     # copy uvopt file
-    if os.path.exists('template.uvoptx'):
+    if os.path.exists(os.path.join(PROJECTS_PATH, 'template.uvoptx')):
         import shutil
-        shutil.copy2('template.uvoptx', '{}.uvoptx'.format(os.path.splitext(target)[0]))
+        shutil.copy2(os.path.join(PROJECTS_PATH, 'template.uvoptx'), os.path.join(PROJECTS_PATH, 'project.uvoptx'))
 
 def MDK2Project(target, script):
     template = open('template.Uv2', "r")
