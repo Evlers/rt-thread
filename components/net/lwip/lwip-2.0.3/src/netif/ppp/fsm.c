@@ -523,14 +523,14 @@ static void fsm_rconfnakrej(fsm *f, int code, int id, u_char *inp, int len) {
 	++f->rnakloops;
 	treat_as_reject = (f->rnakloops >= f->maxnakloops);
 	if (f->callbacks->nakci == NULL
-	    || !(ret = f->callbacks->nakci(f, inp, len, treat_as_reject))) {
+	    || (ret = f->callbacks->nakci(f, inp, len, treat_as_reject)) == 0) {
 	    ppp_error("Received bad configure-nak: %P", inp, len);
 	    return;
 	}
     } else {
 	f->rnakloops = 0;
 	if (f->callbacks->rejci == NULL
-	    || !(ret = f->callbacks->rejci(f, inp, len))) {
+	    || (ret = f->callbacks->rejci(f, inp, len)) == 0) {
 	    ppp_error("Received bad configure-rej: %P", inp, len);
 	    return;
 	}
