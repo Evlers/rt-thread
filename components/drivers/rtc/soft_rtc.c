@@ -6,6 +6,7 @@
  * Change Logs:
  * Date           Author       Notes
  * 2018-01-30     armink       the first version
+ * 2024-06-04     Evlers       remove warning
  */
 
 #include <sys/time.h>
@@ -34,7 +35,9 @@
 #define RTC_AUTO_SYNC_PERIOD 3600
 #endif
 
+#ifdef RT_USING_SYSTEM_WORKQUEUE
 static struct rt_work rtc_sync_work;
+#endif
 static rt_device_t    source_device = RT_NULL;
 
 static struct rt_device soft_rtc_dev;
