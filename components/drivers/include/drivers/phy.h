@@ -7,6 +7,7 @@
  * Date           Author       Notes
  * 2020-10-14     wangqiang    the first version
  * 2022-08-17     xjy198903    add 1000M definition
+ * 2024-06-26     Evlers       add support for multiple instances
  */
 
 #ifndef __PHY_H__
@@ -55,11 +56,11 @@ typedef rt_int32_t rt_phy_status;
 struct rt_phy_ops
 {
     rt_phy_status (*init)(void *object, rt_uint32_t phy_addr, rt_uint32_t src_clock_hz);
-    rt_phy_status (*read)(rt_uint32_t reg, rt_uint32_t *data);
-    rt_phy_status (*write)(rt_uint32_t reg, rt_uint32_t data);
-    rt_phy_status (*loopback)(rt_uint32_t mode, rt_uint32_t speed, rt_bool_t enable);
-    rt_phy_status (*get_link_status)(rt_bool_t *status);
-    rt_phy_status (*get_link_speed_duplex)(rt_uint32_t *speed, rt_uint32_t *duplex);
+    rt_phy_status (*read)(rt_phy_t *phy, rt_uint32_t reg, rt_uint32_t *data);
+    rt_phy_status (*write)(rt_phy_t *phy, rt_uint32_t reg, rt_uint32_t data);
+    rt_phy_status (*loopback)(rt_phy_t *phy, rt_uint32_t mode, rt_uint32_t speed, rt_bool_t enable);
+    rt_phy_status (*get_link_status)(rt_phy_t *phy, rt_bool_t *status);
+    rt_phy_status (*get_link_speed_duplex)(rt_phy_t *phy, rt_uint32_t *speed, rt_uint32_t *duplex);
 };
 
 rt_err_t rt_hw_phy_register(struct rt_phy_device *phy, const char *name);
