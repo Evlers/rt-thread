@@ -550,6 +550,13 @@
 #define VJ_SUPPORT                  1      /* Set > 0 for VJ header compression. */
 #define MD5_SUPPORT                 1      /* Set > 0 for MD5 (see also CHAP) */
 
+#if RT_USING_LWIP_VER_NUM < 0x20102
+/* Default value if unset */
+#ifndef PPP_NUM_TIMEOUTS
+#define PPP_NUM_TIMEOUTS                0
+#endif /* PPP_NUM_TIMEOUTS */
+#endif /* RT_USING_LWIP_VER_NUM < 0x20102 */
+
 #endif /* PPP_SUPPORT */
 
 /**
@@ -585,7 +592,7 @@
 #endif
 
 /* MEMP_NUM_SYS_TIMEOUT: the number of simulateously active timeouts. */
-#define MEMP_NUM_SYS_TIMEOUT       (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_SUPPORT + (LWIP_IPV6 ? (1 + (2*LWIP_IPV6)) : 0))
+#define MEMP_NUM_SYS_TIMEOUT       (LWIP_TCP + IP_REASSEMBLY + LWIP_ARP + (2*LWIP_DHCP) + LWIP_AUTOIP + LWIP_IGMP + LWIP_DNS + PPP_NUM_TIMEOUTS + (LWIP_IPV6 * (1 + LWIP_IPV6_REASS + LWIP_IPV6_MLD)))
 
 /*
  * LWIP_COMPAT_SOCKETS==1: Enable BSD-style sockets functions names.
