@@ -550,14 +550,14 @@
 #define VJ_SUPPORT                  1      /* Set > 0 for VJ header compression. */
 #define MD5_SUPPORT                 1      /* Set > 0 for MD5 (see also CHAP) */
 
+#endif /* PPP_SUPPORT */
+
 #if RT_USING_LWIP_VER_NUM < 0x20102
 /* Default value if unset */
 #ifndef PPP_NUM_TIMEOUTS
 #define PPP_NUM_TIMEOUTS                0
 #endif /* PPP_NUM_TIMEOUTS */
 #endif /* RT_USING_LWIP_VER_NUM < 0x20102 */
-
-#endif /* PPP_SUPPORT */
 
 /**
  * LWIP_POSIX_SOCKETS_IO_NAMES==1: Enable POSIX-style sockets functions names.
