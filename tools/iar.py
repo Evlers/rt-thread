@@ -74,11 +74,11 @@ def IARAddGroup(parent, name, files, project_path):
         else:
             file_name.text = '$PROJ_DIR$\\' + path # ('$PROJ_DIR$\\' + path).decode(fs_encoding)
 
-def IARWorkspace(target):
+def IARWorkspace(target, project_name):
     # make an workspace
     workspace = target.replace('.ewp', '.eww')
     out = open(workspace, 'w')
-    xml = iar_workspace % target
+    xml = iar_workspace % project_name
     out.write(xml)
     out.close()
 
@@ -92,6 +92,7 @@ def IARProject(target, script):
 
     CPPPATH = []
     CPPDEFINES = []
+    LOCAL_CPPDEFINES = []
     LINKFLAGS = ''
     CFLAGS = ''
     Libs = []
@@ -119,6 +120,9 @@ def IARProject(target, script):
         # get each group's definitions
         if 'CPPDEFINES' in group and group['CPPDEFINES']:
             CPPDEFINES += group['CPPDEFINES']
+
+        if 'LOCAL_CPPDEFINES' in group and group['LOCAL_CPPDEFINES']:
+            LOCAL_CPPDEFINES += group['LOCAL_CPPDEFINES']
 
         # get each group's link flags
         if 'LINKFLAGS' in group and group['LINKFLAGS']:
@@ -159,6 +163,10 @@ def IARProject(target, script):
                 state = SubElement(option, 'state')
                 state.text = define
 
+            for define in LOCAL_CPPDEFINES:
+                state = SubElement(option, 'state')
+                state.text = define
+
         if name.text == 'IlinkAdditionalLibs':
             for path in Libs:
                 state = SubElement(option, 'state')
@@ -172,7 +180,7 @@ def IARProject(target, script):
     out.write(etree.tostring(root, encoding='utf-8').decode())
     out.close()
 
-    IARWorkspace(target)
+    IARWorkspace(target, GetOption('project-name') + '.ewp')
 
 def IARPath():
     import rtconfig
