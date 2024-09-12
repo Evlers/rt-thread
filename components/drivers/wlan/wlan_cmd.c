@@ -93,6 +93,7 @@ static int wifi_help(int argc, char *argv[])
     rt_kprintf("wifi scan [SSID]\n");
     rt_kprintf("wifi join [SSID] [PASSWORD]\n");
     rt_kprintf("wifi ap SSID [PASSWORD]\n");
+    rt_kprintf("wifi list_sta\n");
     rt_kprintf("wifi disc\n");
     rt_kprintf("wifi ap_stop\n");
     rt_kprintf("wifi status\n");
