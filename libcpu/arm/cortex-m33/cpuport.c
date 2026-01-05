@@ -18,6 +18,9 @@
  */
 
 #include <rtthread.h>
+#ifdef RT_USING_HW_STACK_GUARD
+    #include <mprotect.h>
+#endif
 
 #if               /* ARMCC */ (  (defined ( __CC_ARM ) && defined ( __TARGET_FPU_VFP ))    \
                   /* Clang */ || (defined ( __clang__ ) && defined ( __VFP_FP__ ) && !defined(__SOFTFP__)) \
@@ -233,6 +236,28 @@ rt_uint8_t *rt_hw_stack_init(void       *tentry,
     return stk;
 }
 
+#ifdef RT_USING_HW_STACK_GUARD
+void rt_hw_stack_guard_init(rt_thread_t thread)
+{
+    rt_mem_region_t stack_top_region, stack_bottom_region;
+    rt_ubase_t stack_bottom = (rt_ubase_t)thread->stack_addr;
+    rt_ubase_t stack_top = (rt_ubase_t)((rt_uint8_t *)thread->stack_addr + thread->stack_size);
+    rt_ubase_t stack_bottom_region_start = RT_ALIGN(stack_bottom, MPU_MIN_REGION_SIZE);
+    rt_ubase_t stack_top_region_start = RT_ALIGN_DOWN(stack_top - MPU_MIN_REGION_SIZE, MPU_MIN_REGION_SIZE);
+    stack_top_region.start = (void *)stack_top_region_start;
+    stack_top_region.size = MPU_MIN_REGION_SIZE;
+    stack_top_region.attr = RT_MEM_REGION_P_RO_U_NA;
+    stack_bottom_region.start = (void *)stack_bottom_region_start;
+    stack_bottom_region.size = MPU_MIN_REGION_SIZE;
+    stack_bottom_region.attr = RT_MEM_REGION_P_RO_U_NA;
+    rt_mprotect_add_region(thread, &stack_top_region);
+    rt_mprotect_add_region(thread, &stack_bottom_region);
+    thread->stack_buf = thread->stack_addr;
+    thread->stack_addr = (void *)(stack_bottom_region_start + MPU_MIN_REGION_SIZE);
+    thread->stack_size = (rt_uint32_t)(stack_top_region_start - (rt_ubase_t)thread->stack_addr);
+}
+#endif
+
 /**
  * This function set the hook, which is invoked on fault exception handling.
  *
@@ -260,37 +285,37 @@ static void usage_fault_track(void)
     rt_kprintf("usage fault:\n");
     rt_kprintf("SCB_CFSR_UFSR:0x%02X ", SCB_CFSR_UFSR);
 
-    if(SCB_CFSR_UFSR & (1<<0))
+    if (SCB_CFSR_UFSR & (1 << 0))
     {
         /* [0]:UNDEFINSTR */
         rt_kprintf("UNDEFINSTR ");
     }
 
-    if(SCB_CFSR_UFSR & (1<<1))
+    if (SCB_CFSR_UFSR & (1 << 1))
     {
         /* [1]:INVSTATE */
         rt_kprintf("INVSTATE ");
     }
 
-    if(SCB_CFSR_UFSR & (1<<2))
+    if (SCB_CFSR_UFSR & (1 << 2))
     {
         /* [2]:INVPC */
         rt_kprintf("INVPC ");
     }
 
-    if(SCB_CFSR_UFSR & (1<<3))
+    if (SCB_CFSR_UFSR & (1 << 3))
     {
         /* [3]:NOCP */
         rt_kprintf("NOCP ");
     }
 
-    if(SCB_CFSR_UFSR & (1<<8))
+    if (SCB_CFSR_UFSR & (1 << 8))
     {
         /* [8]:UNALIGNED */
         rt_kprintf("UNALIGNED ");
     }
 
-    if(SCB_CFSR_UFSR & (1<<9))
+    if (SCB_CFSR_UFSR & (1 << 9))
     {
         /* [9]:DIVBYZERO */
         rt_kprintf("DIVBYZERO ");
@@ -304,37 +329,37 @@ static void bus_fault_track(void)
     rt_kprintf("bus fault:\n");
     rt_kprintf("SCB_CFSR_BFSR:0x%02X ", SCB_CFSR_BFSR);
 
-    if(SCB_CFSR_BFSR & (1<<0))
+    if (SCB_CFSR_BFSR & (1 << 0))
     {
         /* [0]:IBUSERR */
         rt_kprintf("IBUSERR ");
     }
 
-    if(SCB_CFSR_BFSR & (1<<1))
+    if (SCB_CFSR_BFSR & (1 << 1))
     {
         /* [1]:PRECISERR */
         rt_kprintf("PRECISERR ");
     }
 
-    if(SCB_CFSR_BFSR & (1<<2))
+    if (SCB_CFSR_BFSR & (1 << 2))
     {
         /* [2]:IMPRECISERR */
         rt_kprintf("IMPRECISERR ");
     }
 
-    if(SCB_CFSR_BFSR & (1<<3))
+    if (SCB_CFSR_BFSR & (1 << 3))
     {
         /* [3]:UNSTKERR */
         rt_kprintf("UNSTKERR ");
     }
 
-    if(SCB_CFSR_BFSR & (1<<4))
+    if (SCB_CFSR_BFSR & (1 << 4))
     {
         /* [4]:STKERR */
         rt_kprintf("STKERR ");
     }
 
-    if(SCB_CFSR_BFSR & (1<<7))
+    if (SCB_CFSR_BFSR & (1 << 7))
     {
         rt_kprintf("SCB->BFAR:%08X\n", SCB_BFAR);
     }
@@ -349,31 +374,31 @@ static void mem_manage_fault_track(void)
     rt_kprintf("mem manage fault:\n");
     rt_kprintf("SCB_CFSR_MFSR:0x%02X ", SCB_CFSR_MFSR);
 
-    if(SCB_CFSR_MFSR & (1<<0))
+    if (SCB_CFSR_MFSR & (1 << 0))
     {
         /* [0]:IACCVIOL */
         rt_kprintf("IACCVIOL ");
     }
 
-    if(SCB_CFSR_MFSR & (1<<1))
+    if (SCB_CFSR_MFSR & (1 << 1))
     {
         /* [1]:DACCVIOL */
         rt_kprintf("DACCVIOL ");
     }
 
-    if(SCB_CFSR_MFSR & (1<<3))
+    if (SCB_CFSR_MFSR & (1 << 3))
     {
         /* [3]:MUNSTKERR */
         rt_kprintf("MUNSTKERR ");
     }
 
-    if(SCB_CFSR_MFSR & (1<<4))
+    if (SCB_CFSR_MFSR & (1 << 4))
     {
         /* [4]:MSTKERR */
         rt_kprintf("MSTKERR ");
     }
 
-    if(SCB_CFSR_MFSR & (1<<7))
+    if (SCB_CFSR_MFSR & (1 << 7))
     {
         /* [7]:MMARVALID */
         rt_kprintf("SCB->MMAR:%08X\n", SCB_MMAR);
@@ -386,33 +411,33 @@ static void mem_manage_fault_track(void)
 
 static void hard_fault_track(void)
 {
-    if(SCB_HFSR & (1UL<<1))
+    if (SCB_HFSR & (1UL << 1))
     {
         /* [1]:VECTBL, Indicates hard fault is caused by failed vector fetch. */
         rt_kprintf("failed vector fetch\n");
     }
 
-    if(SCB_HFSR & (1UL<<30))
+    if (SCB_HFSR & (1UL << 30))
     {
         /* [30]:FORCED, Indicates hard fault is taken because of bus fault,
                         memory management fault, or usage fault. */
-        if(SCB_CFSR_BFSR)
+        if (SCB_CFSR_BFSR)
         {
             bus_fault_track();
         }
 
-        if(SCB_CFSR_MFSR)
+        if (SCB_CFSR_MFSR)
         {
             mem_manage_fault_track();
         }
 
-        if(SCB_CFSR_UFSR)
+        if (SCB_CFSR_UFSR)
         {
             usage_fault_track();
         }
     }
 
-    if(SCB_HFSR & (1UL<<31))
+    if (SCB_HFSR & (1UL << 31))
     {
         /* [31]:DEBUGEVT, Indicates hard fault is triggered by debug event. */
         rt_kprintf("debug event\n");
@@ -473,7 +498,7 @@ void rt_hw_hard_fault_exception(struct exception_info *exception_info)
         rt_kprintf("hard fault on handler\r\n\r\n");
     }
 
-    if ( (exception_info->exc_return & 0x10) == 0)
+    if ((exception_info->exc_return & 0x10) == 0)
     {
         rt_kprintf("FPU active!\r\n");
     }
@@ -514,7 +539,7 @@ __asm int __rt_ffs(int value)
     CLZ     r0, r0
     ADDS    r0, r0, #0x01
 
-exit
+    exit
     BX      lr
 }
 #elif defined(__clang__)
