@@ -274,7 +274,7 @@ static rt_int32_t mmcsd_switch(struct rt_mmcsd_card *card)
     card->max_data_rate = 50000000;
     if (switch_func_timing == SD_SWITCH_FUNC_TIMING_SDR104)
     {
-        LOG_I("sd: switch to SDR104 mode\n");
+        LOG_I("sd: switch to SDR104 mode");
         mmcsd_set_timing(card->host, MMCSD_TIMING_UHS_SDR104);
         mmcsd_set_clock(card->host, 208000000);
         err = mmcsd_excute_tuning(card);
@@ -282,7 +282,7 @@ static rt_int32_t mmcsd_switch(struct rt_mmcsd_card *card)
     }
     else if (switch_func_timing == SD_SWITCH_FUNC_TIMING_SDR50)
     {
-        LOG_I("sd: switch to SDR50 mode\n");
+        LOG_I("sd: switch to SDR50 mode");
         mmcsd_set_timing(card->host, MMCSD_TIMING_UHS_SDR50);
         mmcsd_set_clock(card->host, 100000000);
         err = mmcsd_excute_tuning(card);
@@ -290,13 +290,13 @@ static rt_int32_t mmcsd_switch(struct rt_mmcsd_card *card)
     }
     else if (switch_func_timing == SD_SWITCH_FUNC_TIMING_DDR50)
     {
-        LOG_I("sd: switch to DDR50 mode\n");
+        LOG_I("sd: switch to DDR50 mode");
         mmcsd_set_timing(card->host, MMCSD_TIMING_UHS_DDR50);
         mmcsd_set_clock(card->host, 50000000);
     }
     else
     {
-        LOG_I("sd: switch to High Speed / SDR25 mode \n");
+        LOG_I("sd: switch to High Speed / SDR25 mode");
         mmcsd_set_timing(card->host, MMCSD_TIMING_SD_HS);
         mmcsd_set_clock(card->host, 50000000);
     }
