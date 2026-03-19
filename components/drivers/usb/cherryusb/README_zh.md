@@ -70,11 +70,13 @@ CherryUSB Device 协议栈当前实现以下功能：
 - 支持 Mass Storage Class (MSC)
 - 支持 USB VIDEO CLASS (UVC1.0、UVC1.5)
 - 支持 USB AUDIO CLASS (UAC1.0、UAC2.0)
+- 支持 Remote NDIS (RNDIS)
 - 支持 Device Firmware Upgrade CLASS (DFU)
 - 支持 USB MIDI CLASS (MIDI)
-- 支持 Remote NDIS (RNDIS)
 - 支持 Media Transfer Protocol (MTP)
+- 支持 Test and Measurement Class (TMC)
 - 支持 WINUSB1.0、WINUSB2.0、WEBUSB、BOS
+- 支持 Vendor display ([xfz1986_usb_graphic_driver](https://github.com/chuanjinpang/win10_idd_xfz1986_usb_graphic_driver_display))
 - 支持 Vendor 类 class
 - 支持 UF2
 - 支持 Android Debug Bridge (Only support shell)
@@ -93,6 +95,7 @@ CherryUSB Device 协议栈资源占用说明（GCC 10.2 with -O2）：
 |usbd_rndis.c   |  ~2500          | 2 * 1580(default)+156+8   | 80           | 0                |
 |usbd_cdc_ecm.c |  ~900           | 2 * 1514(default)+16      | 42           | 0                |
 |usbd_mtp.c     |  ~9000          | 2048(default)+128         | sizeof(struct mtp_object) * n| 0 |
+|usbd_dfu.c     |  ~2200          | 0                         | 45                           | 0 |
 
 ## Host 协议栈简介
 
@@ -108,11 +111,13 @@ CherryUSB Host 协议栈当前实现以下功能：
 - 支持 Communication Device Class (CDC_ACM, CDC_ECM, CDC_NCM)
 - 支持 Human Interface Device (HID)
 - 支持 Mass Storage Class (MSC)
-- Support USB Video CLASS (UVC1.0、UVC1.5)
-- Support USB Audio CLASS (UAC1.0)
+- 支持 USB Video CLASS (UVC1.0、UVC1.5)
+- 支持 USB Audio CLASS (UAC1.0)
 - 支持 Remote NDIS (RNDIS)
+- 支持 Device Firmware Upgrade CLASS (DFU)
 - 支持 USB Bluetooth (支持 nimble and zephyr bluetooth 协议栈，支持 **CLASS: 0xE0** 或者厂家自定义类，类似于 cdc acm 功能)
-- 支持 Vendor 类 class (serial, net, wifi)
+- 支持 Vendor Serial 类(CH34X、CP210X、PL2303、FTDI、GSM)
+- 支持 Vendor network 类(RTL8152、AX88772)
 - 支持 USB modeswitch
 - 支持 Android Open Accessory
 - 支持相同 USB IP 的多主机
@@ -150,7 +155,7 @@ CherryUSB Host 协议栈资源占用说明（GCC 10.2 with -O2，关闭 log）�
 x 受以下宏影响：
 
 ```
-#define CONFIG_USBHOST_MAX_CDC_ACM_CLASS 4
+#define CONFIG_USBHOST_MAX_SERIAL_CLASS  4
 #define CONFIG_USBHOST_MAX_HID_CLASS     4
 #define CONFIG_USBHOST_MAX_MSC_CLASS     2
 #define CONFIG_USBHOST_MAX_AUDIO_CLASS   1
@@ -175,57 +180,35 @@ x 受以下宏影响：
 |  CDNS3(cadence)  |  CDNS3     | XHCI     |  ×   |
 |  DWC3(synopsys)  |  DWC3      | XHCI     |  ×   |
 
-## 文档教程
+## Resources
 
-CherryUSB 快速入门、USB 基本概念、API 手册、Class 基本概念和例程，参考 [CherryUSB Documentation Tutorial](https://cherryusb.readthedocs.io/)。
+### 快速开始
 
-## 视频教程
+- 📖 [CherryUSB Documentation](https://cherryusb.readthedocs.io/zh-cn/latest/)
+- 💻 [CherryUSB Demo Repo](https://cherryusb.readthedocs.io/zh-cn/latest/quick_start/demo.html)
+- 📺 [CherryUSB Cheese(>= V1.4.3)](https://www.bilibili.com/cheese/play/ss707687201)
 
-CherryUSB 课程（基于 V1.4.3）：https://www.bilibili.com/cheese/play/ss707687201 。
+### 工具
 
-## 描述符生成工具
+- 🌐 [Cherry Descriptor Generator](https://desc.cherry-embedded.org/zh)
+- 🔧 [CDC Speed Test](https://github.com/cherry-embedded/CherryUSB/blob/master/tools/test_srcipts/test_cdc_speed.py)
+- 🔧 [HID Custom Test](https://github.com/cherry-embedded/CherryUSB/blob/master/tools/test_srcipts/test_hid_inout.py)
 
-TODO
+### 社区 Or 商业支持
 
-## 示例仓库
+- 💬 [CherryUSB QQ Group](https://qm.qq.com/q/w3GnM4bkfA)
+- 💬 [CherryUSB discord](https://discord.com/invite/wFfvrSAey8)
+- 🙋🏽 [Commercial Support](https://cherryusb.readthedocs.io/zh-cn/latest/support/index.html)
 
-|   Manufacturer       |  CHIP or Series    | USB IP| Repo Url | Support version     | Note |
-|:--------------------:|:------------------:|:-----:|:--------:|:------------------:|:-------------:|
-|Bouffalolab    |  BL702/BL616/BL808 | bouffalolab/ehci|[bouffalo_sdk](https://github.com/CherryUSB/bouffalo_sdk)|<= latest | Official |
-|ST             |  STM32F1x/STM32F4/STM32H7 | fsdev/dwc2 |[stm32_repo](https://github.com/CherryUSB/cherryusb_stm32)|<= latest | Community |
-|HPMicro        |  HPM6000/HPM5000 | hpm/ehci |[hpm_sdk](https://github.com/CherryUSB/hpm_sdk)|<= latest | Official |
-|Essemi         |  ES32F36xx | musb |[es32f369_repo](https://github.com/CherryUSB/cherryusb_es32)|<= latest | Official |
-|Phytium        |  e2000 | pusb2/xhci |[phytium_repo](https://gitee.com/phytium_embedded/phytium-free-rtos-sdk)|>=1.4.0  | Official |
-|Artinchip      |  d12x/d13x/d21x | aic/ehci/ohci |[luban-lite](https://gitee.com/artinchip/luban-lite)|<= latest  | Official |
-|Espressif      |  esp32s2/esp32s3/esp32p4 | dwc2 |[esp32_repo](https://github.com/CherryUSB/cherryusb_esp32)|<= latest | Official ongoing |
-|Kendryte       |  k230 | dwc2 |[k230_repo](https://github.com/CherryUSB/k230_sdk)|v1.2.0 | Official |
-|Actionstech    |  ATS30xx | dwc2 |[action_zephyr_repo](https://github.com/CherryUSB/lv_port_actions_technology/tree/master/action_technology_sdk)|>=1.4.0 | Official |
-|SiFli          |  SF32LB5x | musb |[SiFli_sdk](https://github.com/OpenSiFli/SiFli-SDK)|>=1.5.0 | Official |
-|NXP            |  mcx | kinetis/chipidea/ehci |[nxp_mcx_repo](https://github.com/CherryUSB/cherryusb_mcx)|<= latest | Community |
-|Nationstech    |  n32h4x | dwc2 |[nation_repo](https://github.com/CherryUSB/cherryusb_nation)|>=1.5.0 | Official ongoing |
-|Raspberry pi   |  rp2040/rp2350 | rp2040 |[pico-sdk](https://github.com/CherryUSB/pico-sdk)|<= latest | Official ongoing |
-|AllwinnerTech  |  F1C100S/F1C200S | musb |[cherryusb_rtt_f1c100s](https://github.com/CherryUSB/cherryusb_rtt_f1c100s)|<= latest | no more update |
-|Bekencorp      |  bk7256/bk7258 | musb |[bk_idk](https://github.com/CherryUSB/bk_idk)| v0.7.0 | Official |
-|Sophgo         |  cv18xx | dwc2 |[cvi_alios_open](https://github.com/CherryUSB/cvi_alios_open)| v0.7.0 | Official |
-|WCH            |  CH32V307/ch58x | ch32_usbfs/ch32_usbhs/ch58x |[wch_repo](https://github.com/CherryUSB/cherryusb_wch)|<= v0.10.2/>=v1.5.0 | no more update |
+### 软件包
 
-## 软件包支持
+- 🌐 [RT-Thread](https://packages.rt-thread.org/detail.html?package=CherryUSB)
+- 🌐 [YOC](https://www.xrvm.cn/document?temp=usb-host-protocol-stack-device-driver-adaptation-instructions&slug=yocbook)
+- 🌐 [ESP-Registry](https://components.espressif.com/components/cherry-embedded/cherryusb)
 
-CherryUSB 软件包可以通过以下方式获取：
+### 镜像仓库
 
-- [RT-Thread](https://packages.rt-thread.org/detail.html?package=CherryUSB)
-- [YOC](https://www.xrvm.cn/document?temp=usb-host-protocol-stack-device-driver-adaptation-instructions&slug=yocbook)
-- [ESP-Registry](https://components.espressif.com/components/cherry-embedded/cherryusb)
-
-## 商业支持
-
-参考 https://cherryusb.readthedocs.io/zh-cn/latest/support/index.html 。
-
-## 联系
-
-CherryUSB QQ群：642693751
-
-CherryUSB 微信群：与我联系后邀请加入
+- [AtomGit](https://atomgit.com/cherry-embedded/CherryUSB)
 
 ## 支持企业
 
